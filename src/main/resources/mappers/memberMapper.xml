@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hoya.mapper.MemberMapper">
+
+	<select id="getTime" resultType="string">
+		select NOW()
+	</select>
+
+	<select id="listAll2" resultType="com.hoya.vo.Search">
+        <![CDATA[
+        SELECT
+            article_no as articleNo,
+            title,
+            content,
+            writer,
+            regdate,
+            viewcnt
+        FROM tbl_article
+        WHERE article_no > 0 AND DEL_YN = 'N'
+        ORDER BY article_no DESC, regdate DESC
+        ]]>
+    </select>
+
+	<insert id="create">
+		INSERT INTO tbl_article (
+		 	article_no
+            , title
+            , content
+            , DEL_YN
+            , writer
+            , regdate
+            , viewcnt
+		) VALUES (
+			#{articleNo}
+            , #{title}
+            , #{content}
+            , 'N'
+            , #{writer}
+            , NOW()
+            , #{viewCnt}
+		)
+	</insert>
+	
+	<update id="updateViewCnt" parameterType="com.hoya.vo.Search">
+		UPDATE tbl_article
+			SET
+				VIEWCNT = IFNULL(VIEWCNT, 0) + 1
+			WHERE
+				article_no = #{articleNo}
+	</update>
+
+
+	<select id="selectDetail" parameterType="Integer" resultType="com.hoya.vo.Search" >
+		SELECT
+			article_no as articleNo,
+            title,
+            content,
+            writer,
+            regdate,
+            viewcnt
+        FROM
+			tbl_article
+		WHERE
+			article_no = #{articleNo}
+	</select>
+
+	<update id="cnupdateBoard" parameterType="com.hoya.vo.Search">
+		UPDATE
+			tbl_article
+		SET
+			TITLE = #{title},
+			CONTENT = #{content}
+		WHERE
+			article_no = #{articleNo}
+	</update>
+
+	<update id="deleteList" parameterType="com.hoya.vo.Search">
+		UPDATE
+			tbl_article
+		SET
+			DEL_YN = 'Y',
+			MOD_DTTM = now()
+		WHERE
+            article_no = #{articleNo}
+	</update>
+
+</mapper>
